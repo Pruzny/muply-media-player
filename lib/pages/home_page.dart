@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:muply/pages/player_page.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:rxdart/rxdart.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,7 +13,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final OnAudioQuery _onAudioQuery = OnAudioQuery();
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = GlobalPlayer.getPlayer();
+  
 
   @override
   void initState() {
@@ -50,10 +53,18 @@ class _HomeState extends State<Home> {
                     id: song.id,
                     type: ArtworkType.AUDIO,
                   ),
-                  onTap: () async {
+                  onTap: () {
                     String? uri = song.uri;
-                    await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-                    await _audioPlayer.play();
+                    GlobalPlayer.songName = song.title;
+                    GlobalPlayer.songId = song.id;
+                    _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+                    _audioPlayer.play();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Player(),
+                      )
+                    );
                   },
                 );
               },
